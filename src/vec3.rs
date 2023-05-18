@@ -6,6 +6,12 @@ use rand::Rng;
 pub struct Vec3(pub f64, pub f64, pub f64);
 
 impl Vec3 {
+    pub const ZERO: Vec3 = Vec3(0., 0., 0.);
+    pub const ONE: Vec3 = Vec3(1., 1., 1.);
+    pub const X: Vec3 = Vec3(1., 0., 0.);
+    pub const Y: Vec3 = Vec3(0., 1., 0.);
+    pub const Z: Vec3 = Vec3(0., 0., 1.);
+
     pub fn random(min: f64, max: f64) -> Vec3 {
         Vec3(
             rand::thread_rng().gen_range(min..max),
