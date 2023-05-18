@@ -2,6 +2,9 @@ use std::ops::{Deref, DerefMut};
 
 use crate::vec3::Vec3;
 
+/// Color is a wrapper around Vec3 to help differentiate it's usage from a 3D
+/// vector/point in space (here, the xyz elements are rgb values.) It also
+/// allows us to define constants/methods specific to colors.
 #[derive(Clone, Copy, Debug)]
 pub struct Color {
     vec: Vec3,

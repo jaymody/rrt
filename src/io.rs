@@ -2,6 +2,8 @@ use std::ops::{Deref, DerefMut};
 
 use crate::color::Color;
 
+/// Stores the rendered image and provides utility methods to convert it to
+/// various output formats.
 pub struct Buffer {
     pixels: Vec<Color>,
     width: usize,

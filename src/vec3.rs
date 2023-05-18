@@ -2,6 +2,10 @@ use std::ops::{Add, Div, Mul, Neg, Sub};
 
 use rand::Rng;
 
+/// A data structure to represent a 3D vector with a x, y, and z component.
+/// Vec3 supports common arithmetic such as scalar/vector multiplication,
+/// addition, subtraction, division, vector negation, and some common linear
+/// algebra operations such as the dot product, cross product, etc ...
 #[derive(Copy, Clone, Debug)]
 pub struct Vec3(pub f64, pub f64, pub f64);
 
@@ -45,16 +49,6 @@ impl Vec3 {
     }
 }
 
-// implement common operations on vectors that we'd like:
-//
-// - negation
-// - vector addition, scalar addition
-// - vector subtraction, scalar subtraction
-// - vector multiplication, scalar multiplication
-// - vector division, scalar division
-//
-// except for negation (Neg), we use the implement_op macro to implement these
-// operations since otherwise it can get quite repetitive
 impl Neg for Vec3 {
     type Output = Vec3;
     fn neg(self) -> Vec3 {

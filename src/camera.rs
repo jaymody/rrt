@@ -1,19 +1,20 @@
 use crate::{ray::Ray, vec3::Vec3};
 
+/// The camera determines how and where we look at the rendered scene.
 pub struct Camera {
-    // The location of the camera center (i.e. the "eye")
+    /// The location of the camera center (i.e. the "eye")
     eye: Vec3,
 
-    // The direction the camera is facing (direction, up, and right form an orthogonal basis).
-    // The magnitude of this vector is equal to the focal length.
+    /// The direction the camera is facing (direction, up, and right form an orthogonal basis).
+    /// The magnitude of this vector is equal to the focal length.
     direction: Vec3,
 
-    // The direction of up (direction, up, and right form an orthogonal basis).
-    // The magnitude of this vector is equal to 1/2 the viewport height.
+    /// The direction of up (direction, up, and right form an orthogonal basis).
+    /// The magnitude of this vector is equal to 1/2 the viewport height.
     up: Vec3,
 
-    // The direction of right (direction, up, and right form an orthogonal basis).
-    // The magnitude of this vector is equal to 1/2 the viewport width.
+    /// The direction of right (direction, up, and right form an orthogonal basis).
+    /// The magnitude of this vector is equal to 1/2 the viewport width.
     right: Vec3,
 }
 

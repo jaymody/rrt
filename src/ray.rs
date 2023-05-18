@@ -1,7 +1,11 @@
 use crate::vec3::Vec3;
 
+/// A ray represents a line in space.
 pub struct Ray {
+    /// The origin point of the ray.
     pub origin: Vec3,
+
+    /// The direction of the ray.
     pub direction: Vec3,
 }
 

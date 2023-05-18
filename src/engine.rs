@@ -2,23 +2,41 @@ use std::ops::Mul;
 
 use crate::{camera::Camera, color::Color, io::Buffer, scene::Scene};
 
+/// The engine handles actually rendering an image given all the necessary
+/// information. The algorithm here is:
+///
+///   1) The camera casts rays out into the scene (num_samples rays per pixels).
+///   2) If a ray hits an object in our scene, we compute the attenuation (how
+///      light is absorbed by the object) and the direction of the outgoing array.
+///   3) We then repeat step 2) for a ray that hits an object until the ray no
+///      longer hits the object or until we have reached max_bounces steps.
+///   4) If a ray ends before reaching max_bounces, we compute the color based
+///      on our background which is providing us ambient light (blue for the
+///      above sky white for the void below). We then go in reverse multiplying
+///      the light color by the attenuation of each object that it hit, until
+///      we get back to our camera, which determines the pixel's color. If the
+///      ray reached max_bounces, we say the color of the ray is just black (no
+///      light).
+///   5) Since there are num_sample rays per pixel, we take the average of them
+///       to determine the final color of a pixel.
+///
 pub struct Engine {
-    // the scene to render
+    /// The scene to render.
     pub scene: Scene,
 
-    // camera
+    /// The camera.
     pub camera: Camera,
 
-    // image width
+    /// Image width.
     pub width: usize,
 
-    // image height
+    /// Image height.
     pub height: usize,
 
-    // number of samples per pixel
+    /// Number of rays to samples per pixel.
     pub num_samples: usize,
 
-    // max number of bounces for a given ray
+    /// Max number of bounces for a given ray.
     pub max_bounces: usize,
 }
 
