@@ -1,65 +1,81 @@
-use std::ops::{Deref, DerefMut};
+use std::ops::{Add, Deref, DerefMut, Div, Mul, Neg, Sub};
 
-use crate::vec3::Vec3;
+use crate::{implement_op, vec3::Vec3};
 
-/// Color is a wrapper around Vec3 to help differentiate it's usage from a 3D
-/// vector/point in space (here, the xyz elements are rgb values.) It also
-/// allows us to define constants/methods specific to colors.
+/// Color and Vec3 are kept as different structs to help differentiate it's
+/// usage from a 3D vector/point in space (here, the xyz elements are rgb),
+/// despite them implementing very similar functionality (such as scalar/vector
+/// addition, etc ...). This allows us to strictly type check it in our code (
+/// we can't accidentally input a Vec3 as a color) and allow us to define
+/// constants/methods specific to colors.
 #[derive(Clone, Copy, Debug)]
 pub struct Color {
-    vec: Vec3,
+    r: f64,
+    g: f64,
+    b: f64,
 }
 
 impl Color {
     pub const WHITE: Color = Color {
-        vec: Vec3(1., 1., 1.),
+        r: 1.,
+        g: 1.,
+        b: 1.,
     };
     pub const BLACK: Color = Color {
-        vec: Vec3(0., 0., 0.),
+        r: 0.,
+        g: 0.,
+        b: 0.,
     };
     pub const RED: Color = Color {
-        vec: Vec3(1., 0., 0.),
+        r: 1.,
+        g: 0.,
+        b: 0.,
     };
     pub const GREEN: Color = Color {
-        vec: Vec3(0., 1., 0.),
+        r: 0.,
+        g: 1.,
+        b: 0.,
     };
     pub const BLUE: Color = Color {
-        vec: Vec3(0., 0., 1.),
+        r: 0.,
+        g: 0.,
+        b: 1.,
     };
     pub const SKY_BLUE: Color = Color {
-        vec: Vec3(0.5, 0.7, 1.0),
+        r: 0.5,
+        g: 0.7,
+        b: 1.0,
     };
 
     pub fn new(r: f64, g: f64, b: f64) -> Self {
-        Color { vec: Vec3(r, g, b) }
+        Color { r, g, b }
     }
 
-    pub fn from_vec(vec: Vec3) -> Self {
-        Color { vec }
+    pub fn from_vec3(vec: Vec3) -> Self {
+        Color {
+            r: vec.x,
+            g: vec.y,
+            b: vec.z,
+        }
     }
 
     pub fn to_u8(&self) -> (u8, u8, u8) {
         (
-            (self.0 * 255.99).clamp(0., 255.99) as u8,
-            (self.1 * 255.99).clamp(0., 255.99) as u8,
-            (self.2 * 255.99).clamp(0., 255.99) as u8,
+            (self.r * 255.99).clamp(0., 255.99) as u8,
+            (self.g * 255.99).clamp(0., 255.99) as u8,
+            (self.b * 255.99).clamp(0., 255.99) as u8,
         )
     }
 }
 
-// implementing Deref and DerefMut allow us to use color as if it were a Vec3
-// (that is we can do color1.dot(color2) and color1 + color) while also being
-// able to implement it's own methods and be kept as a separate type
-impl Deref for Color {
-    type Target = Vec3;
-
-    fn deref(&self) -> &Self::Target {
-        &self.vec
+impl Neg for Color {
+    type Output = Color;
+    fn neg(self) -> Color {
+        Color::new(-self.r, -self.g, -self.b)
     }
 }
 
-impl DerefMut for Color {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.vec
-    }
-}
+implement_op!(Color, add, Add, r, g, b);
+implement_op!(Color, sub, Sub, r, g, b);
+implement_op!(Color, div, Div, r, g, b);
+implement_op!(Color, mul, Mul, r, g, b);

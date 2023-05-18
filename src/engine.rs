@@ -110,8 +110,8 @@ impl Engine {
         // the y component of the associated unit vector of the ray direction.
         //
         // Color the sky blue and the void white
-        let t = (ray.direction.unit_vector().1 + 1.0) / 2.0;
-        let color = Color::from_vec(Color::WHITE.mul(1.0 - t) + Color::SKY_BLUE.mul(t));
+        let t = (ray.direction.unit_vector().y + 1.0) / 2.0;
+        let color = Color::WHITE.mul(1.0 - t) + Color::SKY_BLUE.mul(t);
         color
     }
 }
