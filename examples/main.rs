@@ -1,8 +1,6 @@
-use rrt::{Engine, Scene};
+use rrt::Engine;
 
 fn main() {
     let engine = Engine::new();
-    let scene = Scene::new();
-    let buffer = engine.render(&scene);
-    std::fs::write("./output.ppm", buffer.to_ppm()).unwrap();
+    std::fs::write("./output.ppm", engine.render().to_ppm()).unwrap();
 }
