@@ -1,1 +1,8 @@
+# output image
+/output.ppm
+
+# flamegraph svg output for profilling the code
+/flamegraph.svg
+
+# rust compiled files
 /target
