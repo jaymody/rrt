@@ -111,7 +111,6 @@ impl Engine {
         //
         // Color the sky blue and the void white
         let t = (ray.direction.unit_vector().y + 1.0) / 2.0;
-        let color = Color::WHITE.mul(1.0 - t) + Color::SKY_BLUE.mul(t);
-        color
+        Color::WHITE.mul(1.0 - t) + Color::SKY_BLUE.mul(t)
     }
 }

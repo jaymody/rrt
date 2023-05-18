@@ -1,4 +1,4 @@
-use std::ops::{Add, Deref, DerefMut, Div, Mul, Neg, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 use crate::{implement_op, vec3::Vec3};
 
