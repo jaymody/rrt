@@ -1,3 +1,5 @@
+use std::ops::Mul;
+
 use crate::{camera::Camera, color::Color, io::Buffer, scene::Scene};
 
 pub struct Engine {
@@ -22,11 +24,16 @@ pub struct Engine {
 
 impl Engine {
     pub fn new() -> Self {
+        // TODO: for now, we are hard coding these values but later we'll want
+        // to let the user determine these values
+        const WIDTH: usize = 400;
+        const HEIGHT: usize = 300;
+
         Engine {
             scene: Scene::new(),
-            camera: Camera {},
-            width: 800,
-            height: 600,
+            camera: Camera::new(WIDTH, HEIGHT),
+            width: WIDTH,
+            height: HEIGHT,
             num_samples: 16,
             max_bounces: 10,
         }
@@ -63,16 +70,30 @@ impl Engine {
     }
 
     pub fn render(&self) -> Buffer {
-        let mut buffer = Buffer::new(self.width, self.height);
-        for i in 0..self.height {
-            for j in 0..self.width {
-                buffer[i * self.width + j] = Color::new(
-                    i as f64 / self.height as f64,
-                    j as f64 / self.width as f64,
-                    0.,
-                );
-            }
-        }
-        buffer
+        let pixels = (0..self.height)
+            .flat_map(|i| (0..self.width).map(move |j| self.render_pixel(i, j)))
+            .collect();
+        Buffer::new(pixels, self.width, self.height)
+    }
+
+    fn render_pixel(&self, i: usize, j: usize) -> Color {
+        // Normalize i and j to the range [-1, 1].
+        let a = (i as f64 / (self.height - 1) as f64) * 2.0 - 1.0;
+        let b = (j as f64 / (self.width - 1) as f64) * 2.0 - 1.0;
+        let ray = self.camera.get_ray(a, b);
+
+        // By default, we want the effect that any ray that is pointing up into
+        // the sky is blue, and pointing down into the ground (void) is white,
+        // and have a nice gradient for everything in between.
+        //
+        // We can achieve this by taking the y component of the ray direction,
+        // normalizing it to a value between 0 and 1 and use that to blend the
+        // white and sky blue. To normalize the y component to 0 and 1, we take
+        // the y component of the associated unit vector of the ray direction.
+        //
+        // Color the sky blue and the void white
+        let t = (ray.direction.unit_vector().1 + 1.0) / 2.0;
+        let color = Color::from_vec(Color::WHITE.mul(1.0 - t) + Color::SKY_BLUE.mul(t));
+        color
     }
 }

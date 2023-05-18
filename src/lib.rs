@@ -4,6 +4,7 @@ mod engine;
 mod io;
 mod material;
 mod object;
+mod ray;
 mod scene;
 mod shape;
 mod vec3;
