@@ -1,6 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::{color::Color, vec3::Vec3};
+use crate::color::Color;
 
 pub struct Buffer {
     arr: Vec<Color>,
@@ -10,7 +10,7 @@ pub struct Buffer {
 
 impl Buffer {
     pub fn new(width: usize, height: usize) -> Self {
-        let arr = vec![Vec3(0., 0., 0.); width * height];
+        let arr = vec![Color::new(0., 0., 0.); width * height];
         Buffer { arr, width, height }
     }
 
@@ -20,9 +20,7 @@ impl Buffer {
         s.push_str(&format!("{} {}\n", self.width, self.height));
         s.push_str("255\n");
         for color in &self.arr {
-            let r = (color.0 * 255.99).clamp(0., 255.99) as u8;
-            let g = (color.1 * 255.99).clamp(0., 255.99) as u8;
-            let b = (color.2 * 255.99).clamp(0., 255.99) as u8;
+            let (r, g, b) = color.to_u8();
             s.push_str(&format!("{} {} {}\n", r, g, b));
         }
         s

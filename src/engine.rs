@@ -1,4 +1,4 @@
-use crate::{camera::Camera, io::Buffer, scene::Scene, vec3::Vec3};
+use crate::{camera::Camera, color::Color, io::Buffer, scene::Scene};
 
 pub struct Engine {
     // the scene to render
@@ -66,7 +66,7 @@ impl Engine {
         let mut buffer = Buffer::new(self.width, self.height);
         for i in 0..self.height {
             for j in 0..self.width {
-                buffer[i * self.width + j] = Vec3(
+                buffer[i * self.width + j] = Color::new(
                     i as f64 / self.height as f64,
                     j as f64 / self.width as f64,
                     0.,
