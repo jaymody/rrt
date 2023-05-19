@@ -5,13 +5,15 @@ const main = async () => {
 
   const width = 400;
   const height = 225;
+  const num_samples = 10;
+  const max_bounces = 5;
 
   const canvas = document.getElementById("canvas");
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext('2d');
 
-  const dataArray = render(width, height);
+  const dataArray = render(width, height, num_samples, max_bounces);
   const imageData = new ImageData(dataArray, width);
   ctx.putImageData(imageData, 0, 0);
 };

@@ -1,7 +1,4 @@
-use indicatif::ParallelProgressIterator;
 use rand::Rng;
-use rayon::prelude::IntoParallelIterator;
-use rayon::prelude::*;
 
 use crate::{camera::Camera, color::Color, io::Buffer, ray::Ray, scene::Scene};
 
@@ -92,13 +89,7 @@ impl Engine {
 
     pub fn render(&self) -> Buffer {
         let pixels = (0..self.height)
-            .into_par_iter()
-            .progress()
-            .flat_map(|i| {
-                (0..self.width)
-                    .into_par_iter()
-                    .map(move |j| self.render_pixel(i, j))
-            })
+            .flat_map(|i| (0..self.width).map(move |j| self.render_pixel(i, j)))
             .collect();
         Buffer::new(pixels, self.width, self.height)
     }
@@ -117,9 +108,9 @@ impl Engine {
 
         // Take the average over the number of samples.
         (0..self.num_samples)
-            .into_par_iter()
             .map(|_| self.trace_ray(self.camera.get_ray(get_a(i), get_b(j)), 0))
-            .reduce(|| Color::BLACK, |acc, e| acc + e)
+            .reduce(|acc, e| acc + e)
+            .unwrap()
             / self.num_samples as f64
     }
 

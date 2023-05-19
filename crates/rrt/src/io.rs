@@ -3,9 +3,9 @@ use crate::color::Color;
 /// Stores the rendered image and provides utility methods to convert it to
 /// various output formats.
 pub struct Buffer {
-    pixels: Vec<Color>,
-    width: usize,
-    height: usize,
+    pub pixels: Vec<Color>,
+    pub width: usize,
+    pub height: usize,
 }
 
 impl Buffer {
