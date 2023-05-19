@@ -29,12 +29,12 @@ impl Camera {
         // image we're gonna create.
         let aspect_ratio = width as f64 / height as f64;
 
-        let viewport_height = 1.0;
-        let viewport_width = aspect_ratio;
+        let viewport_height = 2.0;
+        let viewport_width = aspect_ratio * viewport_height;
         let focal_length = 1.0;
 
         let eye = Vec3::ZERO;
-        let direction = Vec3::Z * focal_length;
+        let direction = -Vec3::Z * focal_length;
         let up = Vec3::Y * viewport_height / 2.0;
         let right = Vec3::X * viewport_width / 2.0;
 
@@ -53,6 +53,6 @@ impl Camera {
     /// (1, -1) would be the bottom-left corner, (1, 1) would be the bottom
     /// right corner, and (0, 0) would be the center.
     pub fn get_ray(&self, a: f64, b: f64) -> Ray {
-        Ray::new(self.eye, self.direction + b * self.right + a * -self.up)
+        Ray::new(self.eye, self.direction + b * self.right - a * self.up)
     }
 }

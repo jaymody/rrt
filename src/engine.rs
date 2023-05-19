@@ -1,6 +1,6 @@
-use std::ops::Mul;
+use rand::Rng;
 
-use crate::{camera::Camera, color::Color, io::Buffer, scene::Scene};
+use crate::{camera::Camera, color::Color, io::Buffer, ray::Ray, scene::Scene};
 
 /// The engine handles actually rendering an image given all the necessary
 /// information. The algorithm here is:
@@ -44,16 +44,16 @@ impl Engine {
     pub fn new() -> Self {
         // TODO: for now, we are hard coding these values but later we'll want
         // to let the user determine these values
-        const WIDTH: usize = 400;
-        const HEIGHT: usize = 300;
+        const WIDTH: usize = 800;
+        const HEIGHT: usize = 450;
 
         Engine {
             scene: Scene::new(),
             camera: Camera::new(WIDTH, HEIGHT),
             width: WIDTH,
             height: HEIGHT,
-            num_samples: 16,
-            max_bounces: 10,
+            num_samples: 100,
+            max_bounces: 50,
         }
     }
 
@@ -95,22 +95,52 @@ impl Engine {
     }
 
     fn render_pixel(&self, i: usize, j: usize) -> Color {
-        // Normalize i and j to the range [-1, 1].
-        let a = (i as f64 / (self.height - 1) as f64) * 2.0 - 1.0;
-        let b = (j as f64 / (self.width - 1) as f64) * 2.0 - 1.0;
-        let ray = self.camera.get_ray(a, b);
+        // Normalize i and j to the range [-1, 1] and get the ray pointing
+        // at the given pixel.
+        let get_a = |i| {
+            ((i as f64 + rand::thread_rng().gen_range(0.0..1.0)) / (self.height - 1) as f64) * 2.0
+                - 1.0
+        };
+        let get_b = |j| {
+            ((j as f64 + rand::thread_rng().gen_range(0.0..1.0)) / (self.width - 1) as f64) * 2.0
+                - 1.0
+        };
 
-        // By default, we want the effect that any ray that is pointing up into
-        // the sky is blue, and pointing down into the ground (void) is white,
-        // and have a nice gradient for everything in between.
+        // Take the average over the number of samples.
+        (0..self.num_samples)
+            .map(|_| self.trace_ray(self.camera.get_ray(get_a(i), get_b(j)), 0))
+            .reduce(|acc, e| acc + e)
+            .unwrap()
+            / self.num_samples as f64
+    }
+
+    fn trace_ray(&self, ray: Ray, num_bounces: usize) -> Color {
+        // If we've exceeded the max number of bounces, return no light.
+        if num_bounces > self.max_bounces {
+            return Color::BLACK;
+        }
+
+        match self.scene.hit_closest_object(ray) {
+            // If we hit something, trace the outgoing ray and multiply
+            // it's color by the attenuation of the current hit.
+            Some((outgoing_ray, attenuation)) => {
+                attenuation * self.trace_ray(outgoing_ray, num_bounces + 1)
+            }
+            // If we haven't hit anything, return the light from the background.
+            None => self.background_light(ray),
+        }
+    }
+
+    fn background_light(&self, ray: Ray) -> Color {
+        // We get background light from our scene via a sky that is blue
+        // and a void below that is white (and a nice gradient for everything in
+        // between).
         //
         // We can achieve this by taking the y component of the ray direction,
         // normalizing it to a value between 0 and 1 and use that to blend the
         // white and sky blue. To normalize the y component to 0 and 1, we take
         // the y component of the associated unit vector of the ray direction.
-        //
-        // Color the sky blue and the void white
         let t = (ray.direction.unit_vector().y + 1.0) / 2.0;
-        Color::WHITE.mul(1.0 - t) + Color::SKY_BLUE.mul(t)
+        Color::WHITE * (1.0 - t) + Color::SKY_BLUE * t
     }
 }

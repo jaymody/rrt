@@ -60,10 +60,11 @@ impl Color {
     }
 
     pub fn to_u8(&self) -> (u8, u8, u8) {
+        // The .sqrt() is for gamma correction.
         (
-            (self.r * 255.99).clamp(0., 255.99) as u8,
-            (self.g * 255.99).clamp(0., 255.99) as u8,
-            (self.b * 255.99).clamp(0., 255.99) as u8,
+            (256. * self.r.sqrt().clamp(0., 0.999)) as u8,
+            (256. * self.g.sqrt().clamp(0., 0.999)) as u8,
+            (256. * self.b.sqrt().clamp(0., 0.999)) as u8,
         )
     }
 }

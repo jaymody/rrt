@@ -1,5 +1,3 @@
-use std::ops::{Deref, DerefMut};
-
 use crate::color::Color;
 
 /// Stores the rendered image and provides utility methods to convert it to
@@ -30,19 +28,5 @@ impl Buffer {
             s.push_str(&format!("{} {} {}\n", r, g, b));
         }
         s
-    }
-}
-
-impl Deref for Buffer {
-    type Target = [Color];
-
-    fn deref(&self) -> &Self::Target {
-        unsafe { std::slice::from_raw_parts(self.pixels.as_ptr(), self.pixels.len()) }
-    }
-}
-
-impl DerefMut for Buffer {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        unsafe { std::slice::from_raw_parts_mut(self.pixels.as_mut_ptr(), self.pixels.len()) }
     }
 }
