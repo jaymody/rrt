@@ -1,4 +1,4 @@
-use js_sys::Uint8ClampedArray;
+use js_sys::{Promise, Uint8ClampedArray};
 use rrt::{
     color::Color, engine::Engine, material::Lambertian, object::Object, scene::Scene,
     shape::Sphere, vec3::Vec3,
@@ -51,30 +51,27 @@ fn pixels_to_uint8_arr(pixels: Vec<Color>, width: u32, height: u32) -> Uint8Clam
 }
 
 #[wasm_bindgen]
-pub fn render_slow(
-    width: u32,
-    height: u32,
-    num_samples: u32,
-    max_bounces: u32,
-) -> Uint8ClampedArray {
-    // TODO: move this
-    console_error_panic_hook::set_once();
+pub fn initialize(num_threads: usize, set_panic_hook: bool) -> Promise {
+    if set_panic_hook {
+        console_error_panic_hook::set_once();
+    }
+    wasm_bindgen_rayon::init_thread_pool(num_threads)
+}
 
+#[wasm_bindgen]
+pub fn render(width: u32, height: u32, num_samples: u32, max_bounces: u32) -> Uint8ClampedArray {
     let engine = get_engine(width, height, num_samples, max_bounces);
     let pixels = engine.render().pixels;
     pixels_to_uint8_arr(pixels, width, height)
 }
 
 #[wasm_bindgen]
-pub fn render_fast(
+pub fn render_parallel(
     width: u32,
     height: u32,
     num_samples: u32,
     max_bounces: u32,
 ) -> Uint8ClampedArray {
-    // TODO: move this
-    console_error_panic_hook::set_once();
-
     let engine = get_engine(width, height, num_samples, max_bounces);
     let pixels = engine.render_parallel().pixels;
     pixels_to_uint8_arr(pixels, width, height)

@@ -1,5 +1,9 @@
 import * as Comlink from 'comlink';
 
+// TODO
+// probably use import { threads } from 'wasm-feature-detect';
+// to determine if render parallel is supported on the browser
+
 const width = 800;
 const height = 450;
 const num_samples = 100;
@@ -10,15 +14,19 @@ canvas.width = width;
 canvas.height = height;
 const ctx = canvas.getContext('2d');
 
-(async function init() {
-  let handlers = await Comlink.wrap(
+async function getWasmFunctions() {
+  return await Comlink.wrap(
     new Worker(new URL('./wasm-worker.js', import.meta.url), {
       type: 'module'
     })
   ).handlers;
+}
+
+(async function init() {
+  let { render, render_parallel } = await getWasmFunctions();
 
   const start = performance.now();
-  const dataArray = await handlers["fast"](width, height, num_samples, max_bounces);
+  const dataArray = await render_parallel(width, height, num_samples, max_bounces);
   const elapsed = performance.now() - start;
   document.getElementById("time").innerText = elapsed / 1000;
 
