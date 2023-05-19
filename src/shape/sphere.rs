@@ -17,49 +17,49 @@ impl Shape for Sphere {
     fn intersect(&self, ray: Ray, record: &mut HitRecord) -> bool {
         // The equation for a sphere centered at the origin is:
         //
-        //    x^2 + y^2 + z^2 = r^2
+        //    x² + y² + z² = r²
         //
         // If we pack x, y, z into a vector X, we can see that the left hand
         // side of the equation is the same as dot product of X with itself:
         //
-        //    X . X = r^2
+        //    X ⋅ X = r²
         //
         // The equation for a sphere is centered at C is:
         //
-        //    (x - C_x)^2 + (y - C_y)^2 + (z - C_z) = r^2
+        //    (x − C_x)² + (y − C_y)² + (z − C_z) = r²
         //
         // Using our vector notation, we can see that this is the same as:
         //
-        //    (X - C) . (X - C) = r^2
+        //    (X - C) ⋅ (X - C) = r²
         //
         // To find the point(s) where a line p + t*d hits the sphere, we simply
         // replace X with the equation for the line:
         //
-        //    (p + t*d - C) . (p + t*d - C) = r^2
+        //    (p + td − C) . (p + td − C) = r²
         //
         // If we expand and collect terms, we get:
         //
-        //    (d.d)t^2 + (2d.(p - C))t + ((p - C).(p - C) - r^2) = 0
+        //    (d⋅d)t² + (2d⋅(p − C))t + ((p − C)⋅(p − C) − r²) = 0
         //
         // If we assign p := p - C, then we get the simpler:
         //
-        //    (d.d)t^2 + (2d.p)t + (p.p - r^2) = 0
+        //    (d⋅d)t² + (2d⋅ p)t + (p⋅ p − r²) = 0
         //
         // We can use the quadratic equation to solve for t:
         //
-        //    t = (-b +- sqrt(b^2 - 4ac)) / 2a
+        //    t = (−b ± √(b² − 4ac)) / 2a
         //
-        // where a = d.d, b = 2d.p, and c = p.p - r^2. We can simplify the
+        // where a = d⋅d, b = 2d⋅p, and c = p⋅p - r². We can simplify the
         // equation further by exploiting the fact that the b term has a 2 term
-        // in it. Let's replace b = 2h:
+        // in it. Let's substitute b = 2h:
         //
-        //    t = (-2h +- sqrt((2h)^2 - 4ac)) / 2a
-        //    t = (-2h +- sqrt(4h^2 - 4ac)) / 2a
-        //    t = (-2h +- sqrt(4(h^2 - ac))) / 2a
-        //    t = (-2h +- 2 * sqrt(h^2 - ac)) / 2a
-        //    t = (h +- * sqrt(h^2 - ac)) / a
+        //    t = (−2h ± √((2h)² − 4ac)) / 2a
+        //    t = (−2h ± √(4h² − 4ac)) / 2a
+        //    t = (−2h ± √(4(h² − ac))) / 2a
+        //    t = (−2h ± 2√(h² − ac)) / 2a
+        //    t = (-h ± √(h² − ac)) / a
         //
-        // The two's cancel out everywhere, and this is better because h = d.p
+        // The two's cancel out everywhere, and this is better because h = d⋅p
         // is simpler to compute (no multiplication by 2). In total we save
         // 2 multiplications by 2, and a multiplication by 4.
         //
