@@ -45,7 +45,7 @@ async function getWasmFunctions() {
     const elapsed = performance.now() - start;
 
     // update the time output text
-    timeOutput.innerText = elapsed / 1000;
+    timeOutput.innerText = `${(elapsed / 1000).toFixed(4)}s`;
 
     // draw the image on the canvas
     const imageData = new ImageData(dataArray, width);
