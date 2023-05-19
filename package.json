@@ -13,10 +13,10 @@
         "webpack": "^5.75.0",
         "webpack-cli": "^5.0.1",
         "webpack-dev-server": "^4.15.0"
-      },
-      "dependencies": {
-        "rrt-wasm": "file:./crates/rrt-wasm/pkg",
+    },
+    "dependencies": {
         "comlink": "^4.3.1",
+        "rrt-wasm": "file:./crates/rrt-wasm/pkg",
         "wasm-feature-detect": "^1.3.0"
-      }
+    }
 }

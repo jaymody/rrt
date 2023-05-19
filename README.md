@@ -1,3 +1,5 @@
+# Rust Ray Tracer (rrt)
+
 A ray tracer built in Rust that can run in your browser via WebAssembly.
 
 Based on:
@@ -7,14 +9,13 @@ Based on:
 - [My experiments with `wasm-bindgen-rayon` to support multi-threading in Rust compiled wasm via rayon](https://github.com/jaymody/rust-rayon-wasm-demo/tree/main).
 
 ### Usage
-Run the ray tracer natively in rust:
+Run the ray tracer natively in rust (rendered image is written to `output.ppm`):
 ```shell
 cargo run --example --release scene1
 ```
 
-To run the frontend with `rrt` compiled as wasm:
+Run the ray tracer in your browser via `wasm`:
 ```shell
 npm install
-npm run build-wasm
-npm run serve
+npm run dev
 ```

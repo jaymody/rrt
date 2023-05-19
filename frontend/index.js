@@ -4,15 +4,21 @@ import * as Comlink from 'comlink';
 // probably use import { threads } from 'wasm-feature-detect';
 // to determine if render parallel is supported on the browser
 
-const width = 800;
-const height = 450;
-const num_samples = 100;
-const max_bounces = 50;
+const width = 400;
+const height = 225;
+
+const numSamplesInput = document.getElementById("numSamplesInput");
+const numBouncesInput = document.getElementById("numBouncesInput");
+
+const renderButton = document.getElementById("renderButton");
+const renderParallelButton = document.getElementById("renderParallelButton");
 
 const canvas = document.getElementById("canvas");
 canvas.width = width;
 canvas.height = height;
 const ctx = canvas.getContext('2d');
+
+const timeOutput = document.getElementById("timeOutput");
 
 async function getWasmFunctions() {
   return await Comlink.wrap(
@@ -25,11 +31,27 @@ async function getWasmFunctions() {
 (async function init() {
   let { render, render_parallel } = await getWasmFunctions();
 
-  const start = performance.now();
-  const dataArray = await render_parallel(width, height, num_samples, max_bounces);
-  const elapsed = performance.now() - start;
-  document.getElementById("time").innerText = elapsed / 1000;
+  canvas.width = width;
+  canvas.height = height;
 
-  const imageData = new ImageData(dataArray, width);
-  ctx.putImageData(imageData, 0, 0);
+  async function draw(render_fn) {
+    // clear the canvas and indicate we waiting on the render
+    ctx.clearRect(0, 0, width, height)
+    timeOutput.innerText = "rendering ...";
+
+    // render the image and compute the time it took
+    const start = performance.now();
+    const dataArray = await render_fn(width, height, numSamplesInput.value, numBouncesInput.value);
+    const elapsed = performance.now() - start;
+
+    // update the time output text
+    timeOutput.innerText = elapsed / 1000;
+
+    // draw the image on the canvas
+    const imageData = new ImageData(dataArray, width);
+    ctx.putImageData(imageData, 0, 0);
+  }
+
+  renderButton.onclick = function () { draw(render) };
+  renderParallelButton.onclick = function () { draw(render_parallel) };
 })();
