@@ -6,3 +6,9 @@ flamegraph.svg
 
 # rust compiled files
 target/
+
+# ignore wasm-pack generated folder
+pkg/
+
+# ignore vite generated folder
+.vite/
