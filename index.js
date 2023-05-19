@@ -5,8 +5,8 @@ const main = async () => {
 
   const width = 400;
   const height = 225;
-  const num_samples = 10;
-  const max_bounces = 5;
+  const num_samples = 100;
+  const max_bounces = 50;
 
   const canvas = document.getElementById("canvas");
   canvas.width = width;

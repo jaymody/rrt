@@ -38,7 +38,7 @@ pub fn render(width: u32, height: u32, num_samples: u32, max_bounces: u32) -> Ui
         .height(height as usize)
         .num_samples(num_samples as usize)
         .max_bounces(max_bounces as usize);
-    let pixels = engine.render().pixels;
+    let pixels = engine.render_safe().pixels;
 
     // store the
     let arr = Uint8ClampedArray::new_with_length(width * height * 4);

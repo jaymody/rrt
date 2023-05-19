@@ -1,6 +1,10 @@
-use rand::Rng;
+use indicatif::ParallelProgressIterator;
+use rayon::prelude::IntoParallelIterator;
+use rayon::prelude::*;
 
-use crate::{camera::Camera, color::Color, io::Buffer, ray::Ray, scene::Scene};
+use crate::{
+    camera::Camera, color::Color, io::Buffer, ray::Ray, scene::Scene, utils::random_double,
+};
 
 /// The engine handles actually rendering an image given all the necessary
 /// information. The algorithm here is:
@@ -87,31 +91,46 @@ impl Engine {
         self
     }
 
-    pub fn render(&self) -> Buffer {
+    /// Render without the use of indicatif or rayon, so it's compatible with
+    /// web assembly.
+    pub fn render_safe(&self) -> Buffer {
         let pixels = (0..self.height)
-            .flat_map(|i| (0..self.width).map(move |j| self.render_pixel(i, j)))
+            .flat_map(|i| {
+                (0..self.width).map(move |j| {
+                    (0..self.num_samples)
+                        .map(|_| self.trace_ray(self.get_ray_from_ij(i, j), 0))
+                        .reduce(|acc, e| acc + e)
+                        .unwrap()
+                        / self.num_samples as f64
+                })
+            })
             .collect();
         Buffer::new(pixels, self.width, self.height)
     }
 
-    fn render_pixel(&self, i: usize, j: usize) -> Color {
+    pub fn render(&self) -> Buffer {
+        let pixels = (0..self.height)
+            .into_par_iter()
+            .progress()
+            .flat_map(|i| {
+                (0..self.width).into_par_iter().map(move |j| {
+                    (0..self.num_samples)
+                        .into_par_iter()
+                        .map(|_| self.trace_ray(self.get_ray_from_ij(i, j), 0))
+                        .reduce(|| Color::BLACK, |acc, e| acc + e)
+                        / self.num_samples as f64
+                })
+            })
+            .collect();
+        Buffer::new(pixels, self.width, self.height)
+    }
+
+    fn get_ray_from_ij(&self, i: usize, j: usize) -> Ray {
         // Normalize i and j to the range [-1, 1] and get the ray pointing
         // at the given pixel.
-        let get_a = |i| {
-            ((i as f64 + rand::thread_rng().gen_range(0.0..1.0)) / (self.height - 1) as f64) * 2.0
-                - 1.0
-        };
-        let get_b = |j| {
-            ((j as f64 + rand::thread_rng().gen_range(0.0..1.0)) / (self.width - 1) as f64) * 2.0
-                - 1.0
-        };
-
-        // Take the average over the number of samples.
-        (0..self.num_samples)
-            .map(|_| self.trace_ray(self.camera.get_ray(get_a(i), get_b(j)), 0))
-            .reduce(|acc, e| acc + e)
-            .unwrap()
-            / self.num_samples as f64
+        let get_a = |i| ((i as f64 + random_double()) / (self.height - 1) as f64) * 2.0 - 1.0;
+        let get_b = |j| ((j as f64 + random_double()) / (self.width - 1) as f64) * 2.0 - 1.0;
+        self.camera.get_ray(get_a(i), get_b(j))
     }
 
     fn trace_ray(&self, ray: Ray, num_bounces: usize) -> Color {
