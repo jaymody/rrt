@@ -9,3 +9,7 @@ pkg/
 
 # npm stuff
 node_modules/
+
+# ignore parcel generated stuff
+.parcel-cache
+dist/
