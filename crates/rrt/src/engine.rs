@@ -93,7 +93,7 @@ impl Engine {
 
     /// Render without the use of indicatif or rayon, so it's compatible with
     /// web assembly.
-    pub fn render_safe(&self) -> Buffer {
+    pub fn render(&self) -> Buffer {
         let pixels = (0..self.height)
             .flat_map(|i| {
                 (0..self.width).map(move |j| {
@@ -108,10 +108,10 @@ impl Engine {
         Buffer::new(pixels, self.width, self.height)
     }
 
-    pub fn render(&self) -> Buffer {
+    pub fn render_parallel(&self) -> Buffer {
         let pixels = (0..self.height)
             .into_par_iter()
-            .progress()
+            // .progress()
             .flat_map(|i| {
                 (0..self.width).into_par_iter().map(move |j| {
                     (0..self.num_samples)

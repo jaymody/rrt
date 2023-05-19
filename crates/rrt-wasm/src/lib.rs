@@ -13,11 +13,7 @@ extern "C" {
     fn log(s: &str);
 }
 
-#[wasm_bindgen]
-pub fn render(width: u32, height: u32, num_samples: u32, max_bounces: u32) -> Uint8ClampedArray {
-    // set the panic hook to log panics to the js console
-    console_error_panic_hook::set_once();
-
+fn get_engine(width: u32, height: u32, num_samples: u32, max_bounces: u32) -> Engine {
     // create the scene and it's objects
     let mut scene = Scene::new();
     let sphere = Object::new(
@@ -31,16 +27,15 @@ pub fn render(width: u32, height: u32, num_samples: u32, max_bounces: u32) -> Ui
     scene.add_object(sphere);
     scene.add_object(ground);
 
-    // render the scene
-    let engine = Engine::new()
+    Engine::new()
         .scene(scene)
         .width(width as usize)
         .height(height as usize)
         .num_samples(num_samples as usize)
-        .max_bounces(max_bounces as usize);
-    let pixels = engine.render_safe().pixels;
+        .max_bounces(max_bounces as usize)
+}
 
-    // store the
+fn pixels_to_uint8_arr(pixels: Vec<Color>, width: u32, height: u32) -> Uint8ClampedArray {
     let arr = Uint8ClampedArray::new_with_length(width * height * 4);
     for (i, color) in pixels.iter().enumerate() {
         let idx = (i * 4) as u32;
@@ -51,4 +46,34 @@ pub fn render(width: u32, height: u32, num_samples: u32, max_bounces: u32) -> Ui
         arr.set_index(idx + 3, 255); //alpha channel should be fully opaque
     }
     arr
+}
+
+#[wasm_bindgen]
+pub fn set_panic_hook() {
+    // set the panic hook to log panics to the js console
+    console_error_panic_hook::set_once();
+}
+
+#[wasm_bindgen]
+pub fn render_slow(
+    width: u32,
+    height: u32,
+    num_samples: u32,
+    max_bounces: u32,
+) -> Uint8ClampedArray {
+    let engine = get_engine(width, height, num_samples, max_bounces);
+    let pixels = engine.render().pixels;
+    pixels_to_uint8_arr(pixels, width, height)
+}
+
+#[wasm_bindgen]
+pub fn render_fast(
+    width: u32,
+    height: u32,
+    num_samples: u32,
+    max_bounces: u32,
+) -> Uint8ClampedArray {
+    let engine = get_engine(width, height, num_samples, max_bounces);
+    let pixels = engine.render_parallel().pixels;
+    pixels_to_uint8_arr(pixels, width, height)
 }

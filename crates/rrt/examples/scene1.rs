@@ -18,5 +18,5 @@ fn main() {
 
     let engine = Engine::new().scene(scene);
 
-    std::fs::write("./output.ppm", engine.render().to_ppm()).unwrap();
+    std::fs::write("./output.ppm", engine.render_parallel().to_ppm()).unwrap();
 }
