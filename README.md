@@ -9,13 +9,13 @@ Based on:
 - [My experiments with `wasm-bindgen-rayon` to support multi-threading in Rust compiled wasm via rayon](https://github.com/jaymody/rust-rayon-wasm-demo/tree/main).
 
 ### Usage
-Run the ray tracer natively in rust (rendered image is written to `output.ppm`):
-```shell
-cargo run --example --release scene1
-```
-
-Run the ray tracer in your browser via `wasm`:
+Requires `npm` and `rust`:
 ```shell
 npm install
 npm run dev
+```
+
+If you want to run the ray tracer natively in rust (rendered image is written to `output.ppm`), run the following (available examples in `crates/rrt/examples`):
+```shell
+cargo run --example --release scene1
 ```
