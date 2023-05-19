@@ -1,14 +1,11 @@
 # output image
 output.ppm
 
-# flamegraph svg output for profilling the code
-flamegraph.svg
-
 # rust compiled files
 target/
 
 # ignore wasm-pack generated folder
 pkg/
 
-# ignore vite generated folder
-.vite/
+# npm stuff
+node_modules/

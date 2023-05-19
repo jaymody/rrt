@@ -5,6 +5,8 @@ use rrt::{
 };
 use wasm_bindgen::prelude::*;
 
+pub use wasm_bindgen_rayon::init_thread_pool;
+
 extern crate console_error_panic_hook;
 
 #[wasm_bindgen]
@@ -49,18 +51,15 @@ fn pixels_to_uint8_arr(pixels: Vec<Color>, width: u32, height: u32) -> Uint8Clam
 }
 
 #[wasm_bindgen]
-pub fn set_panic_hook() {
-    // set the panic hook to log panics to the js console
-    console_error_panic_hook::set_once();
-}
-
-#[wasm_bindgen]
 pub fn render_slow(
     width: u32,
     height: u32,
     num_samples: u32,
     max_bounces: u32,
 ) -> Uint8ClampedArray {
+    // TODO: move this
+    console_error_panic_hook::set_once();
+
     let engine = get_engine(width, height, num_samples, max_bounces);
     let pixels = engine.render().pixels;
     pixels_to_uint8_arr(pixels, width, height)
@@ -73,6 +72,9 @@ pub fn render_fast(
     num_samples: u32,
     max_bounces: u32,
 ) -> Uint8ClampedArray {
+    // TODO: move this
+    console_error_panic_hook::set_once();
+
     let engine = get_engine(width, height, num_samples, max_bounces);
     let pixels = engine.render_parallel().pixels;
     pixels_to_uint8_arr(pixels, width, height)
