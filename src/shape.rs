@@ -3,7 +3,7 @@ use crate::{hitrecord::HitRecord, ray::Ray, vec3::Vec3};
 const T_MIN: f64 = 0.001;
 
 /// A shape defines the math that determines if a given a ray hits it.
-pub trait Shape {
+pub trait Shape: Sync {
     fn intersect(&self, ray: Ray, record: &mut HitRecord) -> bool;
 }
 

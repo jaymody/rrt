@@ -7,7 +7,7 @@ use crate::{color::Color, hitrecord::HitRecord, ray::Ray, vec3::Vec3};
 ///   2) the attenuation of light (e.g. how much of each red light, blue
 ///        light, and green light is absorbed)
 ///
-pub trait Material {
+pub trait Material: Sync {
     fn scatter(&self, record: HitRecord) -> (Ray, Color);
 }
 
