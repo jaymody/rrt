@@ -1,19 +1,29 @@
-use core::num;
-
 use js_sys::{Uint8ClampedArray, WebAssembly};
-use rayon::prelude::IntoParallelIterator;
-use rayon::prelude::*;
-use rrt::{color::Color, engine::Engine};
+use rrt::{
+    color::Color, engine::Engine, material::Lambertian, object::Object, scene::Scene,
+    shape::Sphere, vec3::Vec3,
+};
 use wasm_bindgen::prelude::*;
 
-use crate::utils::{default_scene, log};
+pub fn default_scene() -> Scene {
+    let mut scene = Scene::new();
+    let sphere = Object::new(
+        Box::new(Sphere::new(0.5, Vec3::new(0., 0., -1.))),
+        Box::new(Lambertian::new(Color::WHITE * 0.5)),
+    );
+    let ground = Object::new(
+        Box::new(Sphere::new(100.0, Vec3::new(0.0, -100.5, -1.0))),
+        Box::new(Lambertian::new(Color::WHITE * 0.5)),
+    );
+    scene.add_object(sphere);
+    scene.add_object(ground);
+    scene
+}
 
 #[wasm_bindgen]
 pub struct Image {
     arr: Vec<u8>,
     buf: Vec<Color>,
-    width: u32,
-    height: u32,
     total_samples: u32,
     engine: Engine,
 }
@@ -24,8 +34,6 @@ impl Image {
         Image {
             arr: vec![255; (width * height * 4) as usize],
             buf: vec![Color::BLACK; (width * height) as usize],
-            width: width,
-            height: height,
             total_samples: 0,
             engine: Engine::new()
                 .scene(default_scene())

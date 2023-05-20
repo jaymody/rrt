@@ -5,7 +5,7 @@ import * as Comlink from 'comlink';
 // to determine if render parallel is supported on the browser
 
 const max_samples = 1000;
-const num_samples_per_step = 3;
+const num_samples_per_step = 1;
 
 const width = 400;
 const height = 225;

@@ -301,7 +301,6 @@ dependencies = [
  "console_error_panic_hook",
  "getrandom",
  "js-sys",
- "rayon",
  "rrt",
  "wasm-bindgen",
  "wasm-bindgen-rayon",
