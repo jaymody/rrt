@@ -9,7 +9,7 @@ pub fn default_scene() -> Scene {
     let mut scene = Scene::new();
     let sphere = Object::new(
         Box::new(Sphere::new(0.5, Vec3::new(0., 0., -1.))),
-        Box::new(Lambertian::new(Color::WHITE * 0.5)),
+        Box::new(Lambertian::new(Color::RED)),
     );
     let ground = Object::new(
         Box::new(Sphere::new(100.0, Vec3::new(0.0, -100.5, -1.0))),

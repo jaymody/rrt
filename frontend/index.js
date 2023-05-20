@@ -4,12 +4,12 @@ import * as Comlink from 'comlink';
 // probably use import { threads } from 'wasm-feature-detect';
 // to determine if render parallel is supported on the browser
 
-const max_samples = 1000;
-const num_samples_per_step = 1;
+const max_samples = 500;
 
-const width = 400;
-const height = 225;
+const width = 640;
+const height = 360;
 
+const numSamplesPerStepInput = document.getElementById("numSamplesPerStepInput");
 const maxBouncesInput = document.getElementById("maxBouncesInput");
 
 const renderButton = document.getElementById("renderButton");
@@ -36,6 +36,8 @@ async function getWasmExports() {
 
   renderButton.onclick = async function () {
     renderButton.disabled = true;
+    let num_samples_per_step = parseInt(numSamplesPerStepInput.value);
+    let max_bounces = parseInt(maxBouncesInput.value);
 
     // clear the canvas and image and indicate we waiting on the render
     ctx.clearRect(0, 0, width, height);
@@ -46,7 +48,7 @@ async function getWasmExports() {
     for (let n = num_samples_per_step; n <= max_samples; n += num_samples_per_step) {
       // render the image and compute the time it took
       const start = performance.now();
-      await image.render(num_samples_per_step, maxBouncesInput.value);
+      await image.render(num_samples_per_step, max_bounces);
       const elapsed = performance.now() - start;
       totalElapsedTime += elapsed;
 
