@@ -6,8 +6,7 @@ async function initHandlers() {
   await wasm.initialize(navigator.hardwareConcurrency); // initialize with max number of threads avail
 
   let render = wasm.render;
-  let render_parallel = wasm.render_parallel;
-  return Comlink.proxy({ render, render_parallel });
+  return Comlink.proxy({ render });
 }
 
 Comlink.expose({

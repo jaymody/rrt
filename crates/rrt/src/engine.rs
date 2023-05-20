@@ -91,24 +91,7 @@ impl Engine {
         self
     }
 
-    /// Render without the use of indicatif or rayon, so it's compatible with
-    /// web assembly.
     pub fn render(&self) -> Buffer {
-        let pixels = (0..self.height)
-            .flat_map(|i| {
-                (0..self.width).map(move |j| {
-                    (0..self.num_samples)
-                        .map(|_| self.trace_ray(self.get_ray_from_ij(i, j), 0))
-                        .reduce(|acc, e| acc + e)
-                        .unwrap()
-                        / self.num_samples as f64
-                })
-            })
-            .collect();
-        Buffer::new(pixels, self.width, self.height)
-    }
-
-    pub fn render_parallel(&self) -> Buffer {
         let pixels = (0..self.height)
             .into_par_iter()
             // .progress()

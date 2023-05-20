@@ -11,7 +11,6 @@ const numSamplesInput = document.getElementById("numSamplesInput");
 const numBouncesInput = document.getElementById("numBouncesInput");
 
 const renderButton = document.getElementById("renderButton");
-const renderParallelButton = document.getElementById("renderParallelButton");
 
 const canvas = document.getElementById("canvas");
 canvas.width = width;
@@ -29,19 +28,18 @@ async function getWasmFunctions() {
 }
 
 (async function init() {
-  let { render, render_parallel } = await getWasmFunctions();
+  let { render } = await getWasmFunctions();
 
   canvas.width = width;
   canvas.height = height;
 
-  async function draw(render_fn) {
-    // clear the canvas and indicate we waiting on the render
+  renderButton.onclick = async function () { // clear the canvas and indicate we waiting on the render
     ctx.clearRect(0, 0, width, height)
     timeOutput.innerText = "rendering ...";
 
     // render the image and compute the time it took
     const start = performance.now();
-    const dataArray = await render_fn(width, height, numSamplesInput.value, numBouncesInput.value);
+    const dataArray = await render(width, height, numSamplesInput.value, numBouncesInput.value);
     const elapsed = performance.now() - start;
 
     // update the time output text
@@ -50,8 +48,5 @@ async function getWasmFunctions() {
     // draw the image on the canvas
     const imageData = new ImageData(dataArray, width);
     ctx.putImageData(imageData, 0, 0);
-  }
-
-  renderButton.onclick = function () { draw(render) };
-  renderParallelButton.onclick = function () { draw(render_parallel) };
+  };
 })();

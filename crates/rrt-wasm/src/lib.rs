@@ -64,15 +64,3 @@ pub fn render(width: u32, height: u32, num_samples: u32, max_bounces: u32) -> Ui
     let pixels = engine.render().pixels;
     pixels_to_uint8_arr(pixels, width, height)
 }
-
-#[wasm_bindgen]
-pub fn render_parallel(
-    width: u32,
-    height: u32,
-    num_samples: u32,
-    max_bounces: u32,
-) -> Uint8ClampedArray {
-    let engine = get_engine(width, height, num_samples, max_bounces);
-    let pixels = engine.render_parallel().pixels;
-    pixels_to_uint8_arr(pixels, width, height)
-}
