@@ -10,6 +10,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 rrt = { path = "../rrt" }
 wasm-bindgen = "0.2"
+rayon = "1.7.0"
 wasm-bindgen-rayon = "1.0.3"
 js-sys = "0.3.63"
 console_error_panic_hook = "0.1"

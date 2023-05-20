@@ -30,9 +30,7 @@ async function getWasmExports() {
 (async function init() {
   let { Image } = await getWasmExports();
 
-  const image = await Image.new(width, height, maxBouncesInput.value);
-  const ptr = await image.get_ptr();
-  const rawImageData = new Uint8Array(memory.buffer, ptr, width * height * 4);
+  const image = await new Image(width, height, maxBouncesInput.value);
 
   renderButton.onclick = async function () {
     // clear the canvas and indicate we waiting on the render
@@ -41,14 +39,16 @@ async function getWasmExports() {
 
     // render the image and compute the time it took
     const start = performance.now();
-    image.render(numSamplesInput.value);
+    await image.render(numSamplesInput.value);
     const elapsed = performance.now() - start;
 
     // update the time output text
     timeOutput.innerText = `${(elapsed / 1000).toFixed(4)}s`;
 
     // draw the image on the canvas
-    const imageData = new ImageData(dataArray, width);
+    const rawImageData = await image.get_image_so_far();
+    console.log(rawImageData.length, rawImageData[0]);
+    const imageData = new ImageData(rawImageData, width);
     ctx.putImageData(imageData, 0, 0);
   };
 })();
