@@ -9,7 +9,14 @@ async function getWasmExports() {
 }
 
 (async function init() {
-  let MyClass = await getWasmExports();
-  let instance = await new MyClass();
-  instance.logSomething();
+  let { Image } = await getWasmExports();
+
+  // the image  gets created and the rust program logs it, so we know rust
+  // code is executing correctly here
+  let instance = await Image.new(1, 2, 3);
+
+  // error!!!
+  // Unhandled Promise Rejection: TypeError: instance.arr_len is not a function.
+  // (In 'instance.arr_len()', 'instance.arr_len' is undefined)	(anonymous function)
+  console.log(await instance.arr_len());
 })();

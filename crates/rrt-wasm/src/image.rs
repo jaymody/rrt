@@ -16,6 +16,7 @@ pub struct Image {
 #[wasm_bindgen]
 impl Image {
     pub fn new(width: u32, height: u32, max_bounces: u32) -> Self {
+        log("Logging form inside rust! Creating image ...");
         Image {
             arr: vec![0; (width * height * 4) as usize],
             width: width,
