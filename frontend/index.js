@@ -8,7 +8,7 @@ const width = 400;
 const height = 225;
 
 const numSamplesInput = document.getElementById("numSamplesInput");
-const numBouncesInput = document.getElementById("numBouncesInput");
+const maxBouncesInput = document.getElementById("maxBouncesInput");
 
 const renderButton = document.getElementById("renderButton");
 
@@ -19,7 +19,7 @@ const ctx = canvas.getContext('2d');
 
 const timeOutput = document.getElementById("timeOutput");
 
-async function getWasmFunctions() {
+async function getWasmExports() {
   return await Comlink.wrap(
     new Worker(new URL('./wasm-worker.js', import.meta.url), {
       type: 'module'
@@ -28,18 +28,20 @@ async function getWasmFunctions() {
 }
 
 (async function init() {
-  let { render } = await getWasmFunctions();
+  let { Image } = await getWasmExports();
 
-  canvas.width = width;
-  canvas.height = height;
+  const image = await Image.new(width, height, maxBouncesInput.value);
+  const ptr = await image.get_ptr();
+  const rawImageData = new Uint8Array(memory.buffer, ptr, width * height * 4);
 
-  renderButton.onclick = async function () { // clear the canvas and indicate we waiting on the render
+  renderButton.onclick = async function () {
+    // clear the canvas and indicate we waiting on the render
     ctx.clearRect(0, 0, width, height)
     timeOutput.innerText = "rendering ...";
 
     // render the image and compute the time it took
     const start = performance.now();
-    const dataArray = await render(width, height, numSamplesInput.value, numBouncesInput.value);
+    image.render(numSamplesInput.value);
     const elapsed = performance.now() - start;
 
     // update the time output text
