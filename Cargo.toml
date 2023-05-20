@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/*"]
+members = ["rrt-wasm", "rrt-core"]
 
 [profile.release]
 debug = true

@@ -1,4 +1,4 @@
-use rrt::{
+use rrt_core::{
     color::Color, engine::Engine, material::Lambertian, object::Object, scene::Scene,
     shape::Sphere, vec3::Vec3,
 };

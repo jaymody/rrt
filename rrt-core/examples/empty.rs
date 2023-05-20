@@ -1,4 +1,4 @@
-use rrt::engine::Engine;
+use rrt_core::engine::Engine;
 
 fn main() {
     let engine = Engine::new();
