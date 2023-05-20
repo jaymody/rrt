@@ -1,14 +1,20 @@
 import * as Comlink from 'comlink';
 
-async function initHandlers() {
-  const wasm = await import('rrt-wasm');
-  await wasm.default(); // initialize wasm
-  await wasm.initialize(navigator.hardwareConcurrency); // initialize with max number of threads avail
-
-  let Image = wasm.Image;
-  return Comlink.proxy({ Image });
+const myValue = 42;
+class MyClass {
+  logSomething() {
+    console.log(`myValue=${myValue}`)
+  }
 }
 
-Comlink.expose({
-  handlers: initHandlers()
-});
+async function initHandlers() {
+  // const wasm = await import('rrt-wasm');
+  // await wasm.default(); // initialize wasm
+  // await wasm.initialize(navigator.hardwareConcurrency); // initialize with max number of threads avail
+
+  // let Image = wasm.Image;
+  // return Comlink.proxy({ Image });
+  return Comlink.proxy(MyClass);
+}
+
+Comlink.expose({ handlers: initHandlers() });
