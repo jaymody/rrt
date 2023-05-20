@@ -14,26 +14,23 @@ pub struct Image {
     buf: Vec<Color>,
     width: u32,
     height: u32,
-    max_bounces: u32,
     total_samples: u32,
     engine: Engine,
 }
 
 #[wasm_bindgen]
 impl Image {
-    pub fn new(width: u32, height: u32, max_bounces: u32) -> Self {
+    pub fn new(width: u32, height: u32) -> Self {
         Image {
             arr: vec![255; (width * height * 4) as usize],
             buf: vec![Color::BLACK; (width * height) as usize],
             width: width,
             height: height,
-            max_bounces: max_bounces,
             total_samples: 0,
             engine: Engine::new()
                 .scene(default_scene())
                 .width(width as usize)
-                .height(height as usize)
-                .max_bounces(max_bounces as usize),
+                .height(height as usize),
         }
     }
 
@@ -41,10 +38,11 @@ impl Image {
         self.arr.as_ptr()
     }
 
-    pub fn render(&mut self, num_samples: u32) {
+    pub fn render(&mut self, num_samples: u32, max_bounces: u32) {
         self.total_samples += num_samples;
 
         self.engine.num_samples = num_samples as usize;
+        self.engine.max_bounces = max_bounces as usize;
         let pixels = self.engine.render().pixels;
 
         for (i, color) in pixels.into_iter().enumerate() {
@@ -61,8 +59,9 @@ impl Image {
         }
     }
 
-    pub fn arr_len(&self) -> usize {
-        self.arr.len()
+    pub fn clear(&mut self) {
+        self.buf.fill(Color::BLACK);
+        self.total_samples = 0;
     }
 
     pub fn get_image_so_far(&self) -> Uint8ClampedArray {
@@ -71,6 +70,6 @@ impl Image {
         let ptr = self.get_ptr();
         let mem = wasm_bindgen::memory().unchecked_into::<WebAssembly::Memory>();
         Uint8ClampedArray::new(&mem.buffer())
-            .slice(ptr as u32, (ptr as usize + self.arr_len()) as u32)
+            .slice(ptr as u32, (ptr as usize + self.arr.len()) as u32)
     }
 }

@@ -4,10 +4,12 @@ import * as Comlink from 'comlink';
 // probably use import { threads } from 'wasm-feature-detect';
 // to determine if render parallel is supported on the browser
 
+const max_samples = 1000;
+const num_samples_per_step = 3;
+
 const width = 400;
 const height = 225;
 
-const numSamplesInput = document.getElementById("numSamplesInput");
 const maxBouncesInput = document.getElementById("maxBouncesInput");
 
 const renderButton = document.getElementById("renderButton");
@@ -30,25 +32,36 @@ async function getWasmExports() {
 (async function init() {
   let { Image } = await getWasmExports();
 
-  const image = await new Image(width, height, maxBouncesInput.value);
+  const image = await new Image(width, height);
 
   renderButton.onclick = async function () {
-    // clear the canvas and indicate we waiting on the render
-    ctx.clearRect(0, 0, width, height)
+    renderButton.disabled = true;
+
+    // clear the canvas and image and indicate we waiting on the render
+    ctx.clearRect(0, 0, width, height);
+    await image.clear();
     timeOutput.innerText = "rendering ...";
 
-    // render the image and compute the time it took
-    const start = performance.now();
-    await image.render(numSamplesInput.value);
-    const elapsed = performance.now() - start;
+    let totalElapsedTime = 0.0;
+    for (let n = num_samples_per_step; n <= max_samples; n += num_samples_per_step) {
+      // render the image and compute the time it took
+      const start = performance.now();
+      await image.render(num_samples_per_step, maxBouncesInput.value);
+      const elapsed = performance.now() - start;
+      totalElapsedTime += elapsed;
 
-    // update the time output text
-    timeOutput.innerText = `${(elapsed / 1000).toFixed(4)}s`;
+      // update the time output text
+      const samples_per_second = n / (totalElapsedTime / 1000);
+      const fps = (n / num_samples_per_step) / (totalElapsedTime / 1000);
+      timeOutput.innerText = `${samples_per_second.toFixed(2)} samples per second, ${fps.toFixed(2)} fps `;
 
-    // draw the image on the canvas
-    const rawImageData = await image.get_image_so_far();
-    console.log(rawImageData.length, rawImageData[0]);
-    const imageData = new ImageData(rawImageData, width);
-    ctx.putImageData(imageData, 0, 0);
+      // draw the image on the canvas
+      const rawImageData = await image.get_image_so_far();
+      console.log(rawImageData.length, rawImageData[0]);
+      const imageData = new ImageData(rawImageData, width);
+      ctx.putImageData(imageData, 0, 0);
+    }
+
+    renderButton.disabled = false;
   };
 })();
