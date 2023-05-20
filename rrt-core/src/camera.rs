@@ -52,7 +52,7 @@ impl Camera {
     /// left corner of the viewport, (-1, 1) would be the top right corner,
     /// (1, -1) would be the bottom-left corner, (1, 1) would be the bottom
     /// right corner, and (0, 0) would be the center.
-    pub fn get_ray(&self, a: f64, b: f64) -> Ray {
+    pub fn cast_ray(&self, a: f64, b: f64) -> Ray {
         Ray::new(self.eye, self.direction + b * self.right - a * self.up)
     }
 }

@@ -1,7 +1,7 @@
 use js_sys::{Uint8ClampedArray, WebAssembly};
 use rrt_core::{
-    color::Color, engine::Engine, material::Lambertian, object::Object, scene::Scene,
-    shape::Sphere, vec3::Vec3,
+    color::Color, engine, material::Lambertian, object::Object, scene::Scene, shape::Sphere,
+    vec3::Vec3,
 };
 use wasm_bindgen::prelude::*;
 
@@ -24,21 +24,22 @@ pub fn default_scene() -> Scene {
 pub struct Image {
     arr: Vec<u8>,
     buf: Vec<Color>,
-    total_samples: u32,
-    engine: Engine,
+    width: usize,
+    height: usize,
+    total_samples: usize,
+    scene: Scene,
 }
 
 #[wasm_bindgen]
 impl Image {
-    pub fn new(width: u32, height: u32) -> Self {
+    pub fn new(width: usize, height: usize) -> Self {
         Image {
-            arr: vec![255; (width * height * 4) as usize],
-            buf: vec![Color::BLACK; (width * height) as usize],
+            arr: vec![255; width * height * 4],
+            buf: vec![Color::BLACK; width * height],
+            width: width,
+            height: height,
             total_samples: 0,
-            engine: Engine::new()
-                .scene(default_scene())
-                .width(width as usize)
-                .height(height as usize),
+            scene: default_scene(),
         }
     }
 
@@ -46,12 +47,17 @@ impl Image {
         self.arr.as_ptr()
     }
 
-    pub fn render(&mut self, num_samples: u32, max_bounces: u32) {
+    pub fn render(&mut self, num_samples: usize, max_bounces: usize) {
         self.total_samples += num_samples;
 
-        self.engine.num_samples = num_samples as usize;
-        self.engine.max_bounces = max_bounces as usize;
-        let pixels = self.engine.render().pixels;
+        let pixels = engine::render(
+            &self.scene,
+            self.width,
+            self.height,
+            num_samples,
+            max_bounces,
+        )
+        .pixels;
 
         for (i, color) in pixels.into_iter().enumerate() {
             // TODO: we need to multiply color by num_samples since render
