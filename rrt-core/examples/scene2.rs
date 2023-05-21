@@ -1,6 +1,6 @@
 use rrt_core::{
-    color::Color, engine, material::Lambertian, object::Object, scene::Scene, shape::Sphere,
-    vec3::Vec3,
+    camera::Camera, color::Color, engine, material::Lambertian, object::Object, scene::Scene,
+    shape::Sphere, vec3::Vec3,
 };
 
 fn main() {
@@ -16,9 +16,11 @@ fn main() {
     scene.add_object(sphere);
     scene.add_object(ground);
 
+    let camera = Camera::default();
+
     std::fs::write(
         "./output.ppm",
-        engine::render(&scene, 800, 450, 250, 50).to_ppm(),
+        engine::render(&scene, &camera, 800, 800, 250, 50).to_ppm(),
     )
     .unwrap();
 }

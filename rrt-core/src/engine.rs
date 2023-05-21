@@ -31,14 +31,17 @@ use crate::{
 /// * `max_bounces` - Max number of bounces for a given ray.
 pub fn render(
     scene: &Scene,
+    camera: &Camera,
     width: usize,
     height: usize,
     num_samples: usize,
     max_bounces: usize,
 ) -> Buffer {
-    let camera = Camera::new(width, height);
-
-    let rand_and_norm = |x, size| ((x as f64 + random_double()) / (size - 1) as f64) * 2.0 - 1.0;
+    let max_dim = width.max(height);
+    let rand_and_norm = |x, size| {
+        (((x as f64 + random_double()) / (size - 1) as f64) * 2.0 - 1.0)
+            / (max_dim as f64 / size as f64) as f64
+    };
     let cast_ray = |i, j| camera.cast_ray(rand_and_norm(i, height), rand_and_norm(j, width));
 
     let pixels = (0..height)

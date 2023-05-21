@@ -6,8 +6,8 @@ import * as Comlink from 'comlink';
 
 const max_samples = 500;
 
-const width = 640;
-const height = 360;
+const width = 400;
+const height = 400;
 
 const numSamplesPerStepInput = document.getElementById("numSamplesPerStepInput");
 const maxBouncesInput = document.getElementById("maxBouncesInput");

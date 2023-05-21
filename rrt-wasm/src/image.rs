@@ -1,7 +1,7 @@
 use js_sys::{Uint8ClampedArray, WebAssembly};
 use rrt_core::{
-    color::Color, engine, material::Lambertian, object::Object, scene::Scene, shape::Sphere,
-    vec3::Vec3,
+    camera::Camera, color::Color, engine, material::Lambertian, object::Object, scene::Scene,
+    shape::Sphere, vec3::Vec3,
 };
 use wasm_bindgen::prelude::*;
 
@@ -28,6 +28,7 @@ pub struct Image {
     height: usize,
     total_samples: usize,
     scene: Scene,
+    camera: Camera,
 }
 
 #[wasm_bindgen]
@@ -40,6 +41,7 @@ impl Image {
             height: height,
             total_samples: 0,
             scene: default_scene(),
+            camera: Camera::default(),
         }
     }
 
@@ -52,6 +54,7 @@ impl Image {
 
         let pixels = engine::render(
             &self.scene,
+            &self.camera,
             self.width,
             self.height,
             num_samples,
