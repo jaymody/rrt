@@ -75,6 +75,33 @@ impl Vec3 {
             self.x * v.y - self.y * v.x,
         )
     }
+
+    pub fn rotate_about_x_axis(self, mut theta: f64) -> Vec3 {
+        theta = theta.to_radians();
+        Vec3::new(
+            self.x,
+            self.y * theta.cos() - self.z * theta.sin(),
+            self.y * theta.sin() + self.z * theta.cos(),
+        )
+    }
+
+    pub fn rotate_about_y_axis(self, mut theta: f64) -> Vec3 {
+        theta = theta.to_radians();
+        Vec3::new(
+            self.x * theta.cos() + self.z * theta.sin(),
+            self.y,
+            self.x * -theta.sin() + self.z * theta.cos(),
+        )
+    }
+
+    pub fn rotate_about_z_axis(self, mut theta: f64) -> Vec3 {
+        theta = theta.to_radians();
+        Vec3::new(
+            self.x * theta.cos() - self.y * theta.sin(),
+            self.x * theta.sin() + self.y * theta.cos(),
+            self.z,
+        )
+    }
 }
 
 impl Neg for Vec3 {

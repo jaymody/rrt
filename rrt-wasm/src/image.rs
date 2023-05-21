@@ -7,28 +7,55 @@ use wasm_bindgen::prelude::*;
 
 pub fn default_scene() -> Scene {
     let mut scene = Scene::new();
-    let sphere = Object::new(
-        Box::new(Sphere::new(0.5, Vec3::new(0., 0., -1.))),
+    let sphere_left = Object::new(
+        Box::new(Sphere::new(0.10, Vec3::new(-0.35, 0., 0.))),
         Box::new(Lambertian::new(Color::RED)),
     );
+    let sphere_middle = Object::new(
+        Box::new(Sphere::new(0.25, Vec3::new(0., 0., 0.))),
+        Box::new(Lambertian::new(Color::GREEN)),
+    );
+    let sphere_right = Object::new(
+        Box::new(Sphere::new(0.10, Vec3::new(0.35, 0., 0.))),
+        Box::new(Lambertian::new(Color::BLUE)),
+    );
     let ground = Object::new(
-        Box::new(Sphere::new(100.0, Vec3::new(0.0, -100.5, -1.0))),
+        Box::new(Sphere::new(100.0, Vec3::new(0.0, -100.25, 0.0))),
         Box::new(Lambertian::new(Color::WHITE * 0.5)),
     );
-    scene.add_object(sphere);
+    scene.add_object(sphere_left);
+    scene.add_object(sphere_middle);
+    scene.add_object(sphere_right);
     scene.add_object(ground);
     scene
 }
 
 #[wasm_bindgen]
 pub struct Image {
+    /// RGBA array containing the actual pixel values we'd like to show.
     arr: Vec<u8>,
+
+    /// Array containing the raw color calculations per pixel (flattened row-wise).
     buf: Vec<Color>,
+
+    /// Width of the rendered image.
     width: usize,
+
+    /// Height of the rendered image.
     height: usize,
+
+    /// Keeps track of the total number of samples we have thus far drawn.
     total_samples: usize,
+
+    /// The scene. The "center" of the scene should be the origin (which is
+    /// what the camera will rotate around).
     scene: Scene,
+
+    /// The camera.
     camera: Camera,
+
+    /// Distance from camera to origin.
+    camera_distance: f64,
 }
 
 #[wasm_bindgen]
@@ -42,7 +69,16 @@ impl Image {
             total_samples: 0,
             scene: default_scene(),
             camera: Camera::default(),
+            camera_distance: 1.0,
         }
+    }
+
+    pub fn set_camera(&mut self, x_rot: f64, y_rot: f64, fov: f64) {
+        let mut direction = Vec3::Z;
+        direction = direction.rotate_about_x_axis(x_rot);
+        direction = direction.rotate_about_y_axis(y_rot);
+        direction = direction.unit_vector() * self.camera_distance;
+        self.camera = Camera::new(-direction, Vec3::ZERO, Vec3::Y, fov);
     }
 
     pub fn get_ptr(&self) -> *const u8 {
