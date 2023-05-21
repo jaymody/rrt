@@ -95,5 +95,5 @@ async function renderLoop(image) {
   const image = await new Image(width, height);
 
   // start render loop
-  await renderLoop(image);
+  renderLoop(image);
 })();
