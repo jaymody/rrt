@@ -4,14 +4,15 @@ import * as Comlink from 'comlink';
 // probably use import { threads } from 'wasm-feature-detect';
 // to determine if render parallel is supported on the browser
 
-const max_samples = 100;
+const maxSamples = 100;
+const numSamplesPerStep = 2;
+const maxBounces = 5;
 const width = 300;
 const height = 300;
+
 let redraw = true;
 let totalRaysDrawn = 0;
 
-const numSamplesPerStepInput = document.getElementById("numSamplesPerStepInput");
-const maxBouncesInput = document.getElementById("maxBouncesInput");
 const xRotInput = document.getElementById("xRotInput");
 const yRotInput = document.getElementById("yRotInput");
 const fovInput = document.getElementById("fovInput");
@@ -26,8 +27,6 @@ const ctx = canvas.getContext('2d');
 // on input, redraw
 inputForm.oninput = async function () {
   redraw = true;
-  numSamplesPerStepOutput.innerText = numSamplesPerStepInput.value;
-  maxBouncesOutput.innerText = maxBouncesInput.value;
   xRotOutput.innerText = xRotInput.value;
   yRotOutput.innerText = yRotInput.value;
   fovOutput.innerText = fovInput.value;
@@ -48,16 +47,12 @@ async function getWasmExports() {
 async function renderLoop(image) {
   let n = 0;
   let totalElapsedTime = 0.0;
-  let numSamplesPerStep = parseInt(numSamplesPerStepInput.value);
-  let maxBounces = parseInt(maxBouncesInput.value);
   let xRot = parseInt(xRotInput.value);
   let yRot = parseInt(yRotInput.value);
   let fov = parseInt(fovInput.value);
 
   while (true) {
     if (redraw) {
-      numSamplesPerStep = parseInt(numSamplesPerStepInput.value);
-      maxBounces = parseInt(maxBouncesInput.value);
       xRot = parseInt(xRotInput.value);
       yRot = parseInt(yRotInput.value);
       fov = parseInt(fovInput.value);
@@ -69,7 +64,7 @@ async function renderLoop(image) {
       await image.clear();
       await image.set_camera(xRot, yRot, fov);
     }
-    else if (n <= max_samples) {
+    else if (n <= maxSamples) {
       // render the image and compute the time it took
       const start = performance.now();
       await image.render(numSamplesPerStep, maxBounces);
