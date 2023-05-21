@@ -10,22 +10,16 @@
 
 <body>
     <!-- inputs -->
-    <form>
+    <form id="inputForm">
         <label for="numSamplesPerStepInput">samples per step:</label>
-        <input type="range" id="numSamplesPerStepInput" value="1" min="1" max="20"
-            oninput="this.nextElementSibling.value = this.value">
-        <output>1</output>
+        <input type="range" id="numSamplesPerStepInput" value="2" min="1" max="20">
+        <output id="numSamplesPerStepOutput">2</output>
 
         <br>
 
         <label for="maxBouncesInput">max ray bounces:</label>
-        <input type="range" id="maxBouncesInput" value="5" min="1" max="20"
-            oninput="this.nextElementSibling.value = this.value">
-        <output>5</output>
-
-        <br>
-
-        <input type="button" value="Render" id="renderButton"></button>
+        <input type="range" id="maxBouncesInput" value="5" min="1" max="20">
+        <output id="maxBouncesOutput">5</output>
     </form>
 
     <!-- canvas -->

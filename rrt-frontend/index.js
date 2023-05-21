@@ -5,21 +5,30 @@ import * as Comlink from 'comlink';
 // to determine if render parallel is supported on the browser
 
 const max_samples = 500;
-
 const width = 400;
 const height = 400;
+let redraw = true;
 
 const numSamplesPerStepInput = document.getElementById("numSamplesPerStepInput");
 const maxBouncesInput = document.getElementById("maxBouncesInput");
-
-const renderButton = document.getElementById("renderButton");
+const inputForm = document.getElementById("inputForm");
+const timeOutput = document.getElementById("timeOutput");
 
 const canvas = document.getElementById("canvas");
 canvas.width = width;
 canvas.height = height;
 const ctx = canvas.getContext('2d');
 
-const timeOutput = document.getElementById("timeOutput");
+// on input, redraw
+inputForm.oninput = async function () {
+  redraw = true;
+  numSamplesPerStepOutput.innerText = numSamplesPerStepInput.value;
+  maxBouncesOutput.innerText = maxBouncesInput.value;
+};
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 async function getWasmExports() {
   return await Comlink.wrap(
@@ -29,23 +38,25 @@ async function getWasmExports() {
   ).handlers;
 }
 
-(async function init() {
-  let { Image } = await getWasmExports();
+async function render_loop(image) {
+  let n = 0;
+  let totalElapsedTime = 0.0;
+  let num_samples_per_step = parseInt(numSamplesPerStepInput.value);
+  let max_bounces = parseInt(maxBouncesInput.value);
 
-  const image = await new Image(width, height);
+  while (true) {
+    if (redraw) {
+      // ctx.clearRect(0, 0, width, height);
+      await image.clear();
 
-  renderButton.onclick = async function () {
-    renderButton.disabled = true;
-    let num_samples_per_step = parseInt(numSamplesPerStepInput.value);
-    let max_bounces = parseInt(maxBouncesInput.value);
+      n = 0;
+      redraw = false;
+      totalElapsedTime = 0.0;
 
-    // clear the canvas and image and indicate we waiting on the render
-    ctx.clearRect(0, 0, width, height);
-    await image.clear();
-    timeOutput.innerText = "rendering ...";
-
-    let totalElapsedTime = 0.0;
-    for (let n = num_samples_per_step; n <= max_samples; n += num_samples_per_step) {
+      num_samples_per_step = parseInt(numSamplesPerStepInput.value);
+      max_bounces = parseInt(maxBouncesInput.value);
+    }
+    else if (n <= max_samples) {
       // render the image and compute the time it took
       const start = performance.now();
       await image.render(num_samples_per_step, max_bounces);
@@ -59,11 +70,23 @@ async function getWasmExports() {
 
       // draw the image on the canvas
       const rawImageData = await image.get_image_so_far();
-      console.log(rawImageData.length, rawImageData[0]);
       const imageData = new ImageData(rawImageData, width);
       ctx.putImageData(imageData, 0, 0);
-    }
 
-    renderButton.disabled = false;
-  };
+      n += num_samples_per_step;
+    } else {
+      // we sleep here so we don't take up clock cycles with the infinite loop
+      await sleep(100);
+    }
+  }
+}
+
+(async function init() {
+  let { Image } = await getWasmExports();
+
+  // get wasm image class
+  const image = await new Image(width, height);
+
+  // start render loop
+  await render_loop(image);
 })();
