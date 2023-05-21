@@ -4,10 +4,11 @@ import * as Comlink from 'comlink';
 // probably use import { threads } from 'wasm-feature-detect';
 // to determine if render parallel is supported on the browser
 
-const max_samples = 500;
+const max_samples = 200;
 const width = 400;
 const height = 400;
 let redraw = true;
+let totalRaysDrawn = 0;
 
 const numSamplesPerStepInput = document.getElementById("numSamplesPerStepInput");
 const maxBouncesInput = document.getElementById("maxBouncesInput");
@@ -38,42 +39,48 @@ async function getWasmExports() {
   ).handlers;
 }
 
-async function render_loop(image) {
+async function renderLoop(image) {
   let n = 0;
   let totalElapsedTime = 0.0;
-  let num_samples_per_step = parseInt(numSamplesPerStepInput.value);
-  let max_bounces = parseInt(maxBouncesInput.value);
+  let numSamplesPerStep = parseInt(numSamplesPerStepInput.value);
+  let maxBounces = parseInt(maxBouncesInput.value);
 
   while (true) {
     if (redraw) {
-      // ctx.clearRect(0, 0, width, height);
       await image.clear();
 
       n = 0;
       redraw = false;
       totalElapsedTime = 0.0;
 
-      num_samples_per_step = parseInt(numSamplesPerStepInput.value);
-      max_bounces = parseInt(maxBouncesInput.value);
+      numSamplesPerStep = parseInt(numSamplesPerStepInput.value);
+      maxBounces = parseInt(maxBouncesInput.value);
     }
     else if (n <= max_samples) {
       // render the image and compute the time it took
       const start = performance.now();
-      await image.render(num_samples_per_step, max_bounces);
+      await image.render(numSamplesPerStep, maxBounces);
       const elapsed = performance.now() - start;
       totalElapsedTime += elapsed;
 
       // update the time output text
-      const samples_per_second = n / (totalElapsedTime / 1000);
-      const fps = (n / num_samples_per_step) / (totalElapsedTime / 1000);
-      timeOutput.innerText = `${samples_per_second.toFixed(2)} samples per second, ${fps.toFixed(2)} fps `;
+      const raysDrawn = width * height * numSamplesPerStep;
+      totalRaysDrawn += raysDrawn;
+
+      const samplesPerSecond = n / (totalElapsedTime / 1000);
+      const fps = (n / numSamplesPerStep) / (totalElapsedTime / 1000);
+
+      timeOutput.innerText =
+        `${samplesPerSecond.toFixed(2)} samples per second
+        ${fps.toFixed(2)} frames per second
+        ${totalRaysDrawn / 1000000}M total rays cast`;
 
       // draw the image on the canvas
       const rawImageData = await image.get_image_so_far();
       const imageData = new ImageData(rawImageData, width);
       ctx.putImageData(imageData, 0, 0);
 
-      n += num_samples_per_step;
+      n += numSamplesPerStep;
     } else {
       // we sleep here so we don't take up clock cycles with the infinite loop
       await sleep(100);
@@ -88,5 +95,5 @@ async function render_loop(image) {
   const image = await new Image(width, height);
 
   // start render loop
-  await render_loop(image);
+  await renderLoop(image);
 })();
