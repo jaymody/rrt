@@ -5,10 +5,15 @@
     <meta charset="UTF-8" />
     <title>rrt</title>
     <script type="module" src="index.js"></script>
-    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
+    <!-- intro -->
+    <p>This is a <a href="https://en.wikipedia.org/wiki/Ray_tracing_(graphics)">Ray Tracer</a> built in <a
+            href="https://www.rust-lang.org">Rust</a> that's
+        running in your browser via <a href="https://webassembly.org">WebAssembly</a> with multi-threading support (<a
+            href="https://github.com/jaymody/rrt">source code</a>).
+    </p>
     <!-- inputs -->
     <form id="inputForm">
         <label for="xRotInput">x rotation:</label>
@@ -27,12 +32,13 @@
         <input type="range" id="fovInput" value="90" min="60" max="120">
         <output id="fovOutput">90</output>
     </form>
+    <br>
 
     <!-- canvas -->
     <canvas id="canvas"></canvas>
 
     <!-- time output -->
-    <p id="timeOutput"><a href="https://github.com/jaymody/rrt">source code</a></p>
+    <p id="timeOutput"></p>
 </body>
 
 </html>

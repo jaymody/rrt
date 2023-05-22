@@ -7,8 +7,8 @@ import * as Comlink from 'comlink';
 const maxSamples = 100;
 const numSamplesPerStep = 1;
 const maxBounces = 5;
-const width = 300;
-const height = 300;
+const width = 400;
+const height = 400;
 
 let redraw = true;
 let totalRaysDrawn = 0;
