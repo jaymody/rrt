@@ -27,9 +27,9 @@ const ctx = canvas.getContext('2d');
 // on input, redraw
 inputForm.oninput = async function () {
   redraw = true;
-  xRotOutput.innerText = xRotInput.value.padStart(4, " ");
-  yRotOutput.innerText = yRotInput.value.padStart(4, " ");
-  fovOutput.innerText = fovInput.value.padStart(4, " ");
+  xRotOutput.innerText = xRotInput.value;
+  yRotOutput.innerText = yRotInput.value;
+  fovOutput.innerText = fovInput.value;
 };
 
 function sleep(ms) {

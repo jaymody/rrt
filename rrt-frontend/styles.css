@@ -10,14 +10,11 @@ body {
     justify-content: center;
 }
 
+
 body * {
-    margin: 10 5;
+    margin: 5 0;
 }
 
-form {
-    text-align: center;
-}
-
-form>output {
-    white-space: pre;
+form>input[type=range] {
+    width: 50%;
 }
