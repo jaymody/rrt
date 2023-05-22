@@ -5,7 +5,7 @@ import * as Comlink from 'comlink';
 // to determine if render parallel is supported on the browser
 
 const maxSamples = 100;
-const numSamplesPerStep = 2;
+const numSamplesPerStep = 1;
 const maxBounces = 5;
 const width = 300;
 const height = 300;
@@ -27,9 +27,9 @@ const ctx = canvas.getContext('2d');
 // on input, redraw
 inputForm.oninput = async function () {
   redraw = true;
-  xRotOutput.innerText = xRotInput.value;
-  yRotOutput.innerText = yRotInput.value;
-  fovOutput.innerText = fovInput.value;
+  xRotOutput.innerText = xRotInput.value.padStart(4, " ");
+  yRotOutput.innerText = yRotInput.value.padStart(4, " ");
+  fovOutput.innerText = fovInput.value.padStart(4, " ");
 };
 
 function sleep(ms) {
@@ -75,12 +75,10 @@ async function renderLoop(image) {
       const raysDrawn = width * height * numSamplesPerStep;
       totalRaysDrawn += raysDrawn;
 
-      const samplesPerSecond = n / (totalElapsedTime / 1000);
       const fps = (n / numSamplesPerStep) / (totalElapsedTime / 1000);
 
       timeOutput.innerText =
-        `${samplesPerSecond.toFixed(2)} samples per second
-        ${fps.toFixed(2)} frames per second
+        `${fps.toFixed(2)} frames per second
         ${totalRaysDrawn / 1000000}M total rays cast`;
 
       // draw the image on the canvas

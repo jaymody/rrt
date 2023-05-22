@@ -17,3 +17,7 @@ body * {
 form {
     text-align: center;
 }
+
+form>output {
+    white-space: pre;
+}
