@@ -2,6 +2,8 @@
 
 A ray tracer built in Rust that can run in your browser via WebAssembly.
 
+![demo](demo.gif)
+
 Based on:
 - [My rust implementation of Ray Tracing In One Weekend](https://github.com/jaymody/ray-tracing-rust)
 - [My experiments with Rust + WebAssembly](https://github.com/jaymody/game-of-life)
