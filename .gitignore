@@ -13,3 +13,6 @@ node_modules/
 # ignore parcel generated stuff
 .parcel-cache
 dist/
+
+# ignore vercel dir
+.vercel

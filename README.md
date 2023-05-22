@@ -21,3 +21,10 @@ If you want to run the ray tracer natively in rust (rendered image is written to
 ```shell
 cargo run --example --release scene1
 ```
+
+### Deploy to Vercel
+Vercel doesn't play well when builds are run on their servers, so as a workaround, we can just build locally and deploy the local build via the vercel CLI:
+```shell
+vercel build
+vercel deploy --prebuilt
+```

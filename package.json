@@ -5,9 +5,11 @@
     "description": "A rust based ray tracer that runs in your browser via wasm.",
     "scripts": {
         "build-wasm": "RUSTFLAGS='-C target-feature=+atomics,+bulk-memory,+mutable-globals' rustup run nightly-2022-12-12 wasm-pack build --target web --release ./rrt-wasm -- -Z build-std=panic_abort,std",
+        "build": "npm run build-wasm && parcel build rrt-frontend/index.html",
         "dev": "npm run build-wasm && parcel rrt-frontend/index.html --open"
     },
     "devDependencies": {
+        "parcel": "^2.8.3",
         "wasm-pack": "^0.11.1"
     },
     "dependencies": {
