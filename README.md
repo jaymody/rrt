@@ -1,6 +1,6 @@
 # Rust Ray Tracer (rrt)
 
-A ray tracer built in Rust that can run in your browser via WebAssembly.
+A ray tracer built in Rust that can run in your browser via WebAssembly ([demo](https://rrt-jaymody.vercel.app)).
 
 ![demo](demo.gif)
 
