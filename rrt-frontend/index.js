@@ -10,11 +10,11 @@ const maxBounces = 5;
 const width = 400;
 const height = 400;
 
+let yRot = 0;
+let xRot = 0;
 let redraw = true;
 let totalRaysDrawn = 0;
 
-const xRotInput = document.getElementById("xRotInput");
-const yRotInput = document.getElementById("yRotInput");
 const fovInput = document.getElementById("fovInput");
 const inputForm = document.getElementById("inputForm");
 const timeOutput = document.getElementById("timeOutput");
@@ -24,11 +24,28 @@ canvas.width = width;
 canvas.height = height;
 const ctx = canvas.getContext('2d');
 
+let isMouseDown = false;
+
+canvas.addEventListener("mousedown", (event) => {
+  isMouseDown = true;
+})
+
+canvas.addEventListener("mouseup", (event) => {
+  isMouseDown = false;
+})
+
+document.addEventListener("mousemove", (event) => {
+  if (isMouseDown) {
+    yRot -= event.movementX;
+    xRot += event.movementY;
+    xRot = Math.max(Math.min(xRot, 90), -90);
+    redraw = true;
+  }
+})
+
 // on input, redraw
 inputForm.oninput = async function () {
   redraw = true;
-  xRotOutput.innerText = xRotInput.value;
-  yRotOutput.innerText = yRotInput.value;
   fovOutput.innerText = fovInput.value;
 };
 
@@ -47,14 +64,10 @@ async function getWasmExports() {
 async function renderLoop(image) {
   let n = 0;
   let totalElapsedTime = 0.0;
-  let xRot = parseInt(xRotInput.value);
-  let yRot = parseInt(yRotInput.value);
   let fov = parseInt(fovInput.value);
 
   while (true) {
     if (redraw) {
-      xRot = parseInt(xRotInput.value);
-      yRot = parseInt(yRotInput.value);
       fov = parseInt(fovInput.value);
 
       n = 0;
